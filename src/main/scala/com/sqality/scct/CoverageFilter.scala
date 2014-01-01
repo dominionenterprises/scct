@@ -7,7 +7,8 @@ class CoverageFilter(excludeFiles: Array[Regex]) {
   private var debug = System.getProperty("scct.debug") == "true"
 
   private def isIncluded(block: CoveredBlock) = {
-    val isMatched = excludeFiles.filter(_.findFirstIn(block.name.sourceFile).isDefined).size > 0
+    val fullName = block.name.packageName + "." + block.name.className
+    val isMatched = excludeFiles.filter(_.findFirstIn(fullName).isDefined).size > 0
 
     if (debug && isMatched) println("scct : excluding " + block.name.sourceFile)
 
