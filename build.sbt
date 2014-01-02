@@ -1,4 +1,4 @@
-organization := "dmm.scct"
+organization := "com.sqality.scct"
 
 name := "scct"
 
@@ -18,7 +18,11 @@ libraryDependencies ++= Seq(
   "org.specs2"  %% "specs2"      % "1.14"  % "test"
 )
 
-publishTo := Some( Resolver.sftp("DMM Maven Repository", "freighter.boats.local", "/home/maven/repository") as("maven", "b0ats123") )
+publishTo <<= version { (v: String) =>
+  val nexus = "https://oss.sonatype.org/"
+  if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
+  else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
 
 testOptions in Test <+= (scalaVersion in Test) map { (scalaVer) => 
   Tests.Setup { () => System.setProperty("scct-test-scala-version", scalaVer) } 
