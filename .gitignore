@@ -9,3 +9,4 @@ lib_managed/
 target/
 self-report/
 .idea
+.idea_modules
