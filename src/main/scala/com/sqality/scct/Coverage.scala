@@ -62,14 +62,8 @@ object Coverage {
     BinaryReporter.report(projectData, env.reportDir)
   }
 
-  private def filteredData: List[CoveredBlock] = {
-    env.excludes match {
-      case excludes: String => {
-        new CoverageFilter(excludes.split(",").filter(_.length > 0).map(_.r)).filter(dataValues)
-      }
-      case _ => dataValues
-    }
-  }
+  private def filteredData: List[CoveredBlock] =
+    CoverageFilter.filter(dataValues, env.excludeFiles, env.excludeClasses)
 
   private def setupShutdownHook {
     Runtime.getRuntime.addShutdownHook(new Thread {

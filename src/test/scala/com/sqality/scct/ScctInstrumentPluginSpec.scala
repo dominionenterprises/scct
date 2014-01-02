@@ -29,11 +29,16 @@ class ScctInstrumentPluginSpec extends Specification with Mockito {
       sut.options.baseDir.getName must not be empty
     }
     "be settable" in {
-      sut.processOptions(List("basedir:/base/dir", "projectId:myProject", "excludePackages:myRegex,yourRegex"), s => ())
+      sut.processOptions(List("basedir:/base/dir", "projectId:myProject", "excludePackages:myRegex,yourRegex",
+        "excludeFiles:regex1,regex2,regex3"), s => ())
       sut.options.projectId mustEqual "myProject"
       sut.options.baseDir.getAbsolutePath mustEqual "/base/dir"
-      sut.options.excludePackages must haveClass[Array[scala.util.matching.Regex]]
-      //sut.options.excludePackages mustEqual Array("myRegex".r, "yourRegex".r)
+      sut.options.excludeClasses must haveClass[Array[scala.util.matching.Regex]]
+      sut.options.excludeClasses(0).toString mustEqual "myRegex"
+      sut.options.excludeClasses(1).toString mustEqual "yourRegex"
+      sut.options.excludeFiles(0).toString mustEqual "regex1"
+      sut.options.excludeFiles(1).toString mustEqual "regex2"
+      sut.options.excludeFiles(2).toString mustEqual "regex3"
     }
     "report error" in {
       var err = ""

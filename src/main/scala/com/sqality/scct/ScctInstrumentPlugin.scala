@@ -21,7 +21,9 @@ class ScctInstrumentPlugin(val global: Global) extends Plugin {
       } else if (opt.startsWith("basedir:")) {
         options.baseDir = new File(opt.substring("basedir:".length))
       } else if (opt.startsWith("excludePackages:")) {
-        options.excludePackages = opt.substring("excludePackages:".length).split(",").filter(_.length > 0).map(_.r)
+        options.excludeClasses = opt.substring("excludePackages:".length).split(",").filter(_.length > 0).map(_.r)
+      } else if (opt.startsWith("excludeFiles:")) {
+        options.excludeFiles = opt.substring("excludeFiles:".length).split(",").filter(_.length > 0).map(_.r)
       } else {
         error("Unknown option: " + opt)
       }
@@ -33,7 +35,12 @@ class ScctInstrumentPlugin(val global: Global) extends Plugin {
   )
 }
 
-class ScctInstrumentPluginOptions(val compilationId: String, var projectId: String, var baseDir: File, var excludePackages: Array[Regex] = Array()) {
+class ScctInstrumentPluginOptions(
+    val compilationId: String,
+    var projectId: String,
+    var baseDir: File,
+    var excludeClasses: Array[Regex] = Array(),
+    var excludeFiles: Array[Regex] = Array()) {
   def this() = this(System.currentTimeMillis.toString + Random.nextLong().toString, ScctInstrumentPluginOptions.defaultProjectName, ScctInstrumentPluginOptions.defaultBasedir)
 }
 
@@ -55,8 +62,6 @@ class ScctTransformComponent(val global: Global, val opts: ScctInstrumentPluginO
   val phaseName = "scctInstrumentation"
   def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
 
-  val filter = new CoverageFilter(opts.excludePackages)
-
   var debug = System.getProperty("scct.debug") == "true"
   var saveData = true
   var counter = 0
@@ -77,7 +82,7 @@ class ScctTransformComponent(val global: Global, val opts: ScctInstrumentPluginO
 
     private def saveMetadata {
       if (saveData) {
-        val filtered = filter.filter(data)
+        val filtered = CoverageFilter.filter(data, opts.excludeFiles.toList, opts.excludeClasses.toList)
 
         println("scct: [" + opts.projectId + "] Saving coverage data.")
         if (coverageFile.exists) coverageFile.delete
