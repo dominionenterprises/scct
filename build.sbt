@@ -18,7 +18,12 @@ libraryDependencies ++= Seq(
   "org.specs2"  %% "specs2"      % "1.14"  % "test"
 )
 
-publishTo := Some( Resolver.sftp("DMM Maven Repository", "freighter.boats.local", "/home/maven/repository") as("maven", "b0ats123") )
+credentials += Credentials("Artifactory Realm", System.getProperty("deploy.realm"), System.getProperty("deploy.user"), System.getProperty("deploy.password"))
+
+publishTo := {
+  val dmmRepo = "http://dominionmarinemedia.artifactoryonline.com/dominionmarinemedia/"
+  Some("dmm-plugins-snapshots" at dmmRepo + "plugins-snapshots-local")
+}
 
 testOptions in Test <+= (scalaVersion in Test) map { (scalaVer) => 
   Tests.Setup { () => System.setProperty("scct-test-scala-version", scalaVer) } 
