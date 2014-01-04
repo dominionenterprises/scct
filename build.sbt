@@ -22,7 +22,7 @@ credentials += Credentials("Artifactory Realm", System.getProperty("deploy.realm
 
 publishTo := {
   val dmmRepo = "http://dominionmarinemedia.artifactoryonline.com/dominionmarinemedia/"
-  Some("dmm-plugins-snapshots" at dmmRepo + "plugins-snapshots-local")
+  Some("dmm-libs-snapshots" at dmmRepo + "libs-snapshots-local")
 }
 
 testOptions in Test <+= (scalaVersion in Test) map { (scalaVer) => 
